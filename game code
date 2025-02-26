@@ -9,7 +9,6 @@ from termcolor import colored
 # mystery vial
 # Sword
 # regular clothes
-# 
 
 def delay_print(words):
     for l in words:
@@ -37,7 +36,7 @@ def startoverAction(answer):
             delay_print("You awake in a dark room, You vaguely remember this place.\n")
             delay_print("You look around and see a pile of clothes, a chest, and a window.\n")
             state["health"] = 30
-            state["armor"] = 8
+            state["armor"] = 10
             state["inventory"] = []
             state["location"] = "darkroom"
             state["prompt"] = "Do you check the pile of clothes, the chest, or the window "
@@ -79,7 +78,7 @@ def darkroom2Action(answer):
         delay_print("You are curious about this new chest and go over to it cautiously\n")
         delay_print("You open the chest and find a set of half chain armor\n")
         state["location"] = "darkroom2"
-        state["promt"] = "Do you don the armor?\n"
+        state["prompt"] = "Do you don the armor?\n"
         state["allowed_resps"] = ["put it on", "put it back"]
     if answer == "window":
         delay_print("You walk over to the window, noticing the designs have changed but still looks breakable\n")
@@ -98,6 +97,23 @@ def darkroom2Action(answer):
             state["location"] = "atwindow"
             state["prompt"] = "Do you try to break it or open the door?"
             state["allowed_resps"] = ["break it", "open door"]
+    if answer == "put it on":
+        if "Half Chain" not in state["inventory"]:
+            state["inventory"].append("Half Chain")
+            cprint(f"Inventory:{state['inventory']}", "green")
+            state["armor"] = 16
+            cprint(f"Armor:{state['armor']}", "cyan")
+            delay_print("You put the armor on and feel a wierd sensation, almost as if the armor doesn't have a weight")
+            state["location"] = "darkroom2"
+            state["prompt"] = "What would you like to do now?\n"
+            state["allowed_resps"] = ["chest", "pile of clothes", "window", "door"]
+    if answer == "put it back":
+        delay_print("You set the armor down and suddenly the chest disappears")
+        state["location"] = "darkroom2"
+        state["prompt"] = "What would you like to do now?\n"
+        state["allowed_resps"] = ["chest", "pile of clothes", "window", "door"]
+
+        
 
 def opendoorAction(answer):
     if answer == "go to the window":
@@ -196,7 +212,7 @@ def threedoorAction(answer):
             delay_print("You open the door and find an armored cultist that turns upon hearing the door open\n")
             delay_print("You only have a vial in your pocket to defend yourself\n")
             state["location"] = "firstroom"
-            state["prompt"] = "Do you throw the vial or attempt to grapple the cultist and overpower him"
+            state["prompt"] = "Do you throw the vial or attempt to grapple the cultist and overpower him\n"
             state["allowed_resps"] = ["throw it", "attempt to grapple"]
     elif answer == "second":
             delay_print("You open the second door to a dimly lit room and hear maniacal laughter\n")
@@ -229,13 +245,13 @@ def thirdroomAction(answer):
             delay_print("She hands you a small object that as it comes in contact with your hand instantly transforms into small bracers with intricate designs\n")
             delay_print("When you look back to thank the lady she is gone\n")
             if "bracers" not in state["inventory"]:
-                    state["inventory"].append("bracers")
-                    cprint(f"Inventory:{state['inventory']}", "green")
-                    state["armor"] = state["armor"] + 2
-                    cprint(f"Armor:{state['armor']}", "cyan")
-                    state["location"] = "emptyroom"
-                    state["prompt"] = "What would you like to do next?\n"
-                    state["allowed_resps"] = ["look around", "check the furniture", "back"] 
+                state["inventory"].append("bracers")
+                cprint(f"Inventory:{state['inventory']}", "green")
+                state["armor"] = state["armor"] + 2
+                cprint(f"Armor:{state['armor']}", "cyan")
+                state["location"] = "emptyroom"
+                state["prompt"] = "What would you like to do next?\n"
+                state["allowed_resps"] = ["look around", "check the furniture", "back"] 
         else:
             delay_print("As you start to move things you accidently tip the vanity over shattering the mirror\n")
             delay_print("You hear a shriek that pierces your mind causing you to drop to one knee in pain as you cover your ears\n")
