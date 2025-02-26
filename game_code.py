@@ -1,3 +1,4 @@
+from typing import Literal
 import random
 import time
 import sys
@@ -84,7 +85,7 @@ def darkroom2Action(answer):
         delay_print("You walk over to the window, noticing the designs have changed but still looks breakable\n")
         delay_print("You also see the door you escaped out last time\n")
         dieroll = random.randint(1,20)
-        cprint(dieroll, "blue")
+        cprint(dieroll, "magenta")
         if dieroll >= 18:
             delay_print("The window breaks and you fall out into an empty courtyard\n")
             delay_print("You look around and see a wagon, a gate, and a door back into the building you just fell out of \n")
@@ -118,7 +119,7 @@ def darkroom2Action(answer):
 def opendoorAction(answer):
     if answer == "go to the window":
         dieroll = random.randint(1,20)
-        cprint(dieroll, "blue")
+        cprint(dieroll, "magenta")
         if dieroll >= 18:
             delay_print("The window breaks and you fall out into an empty courtyard\n")
             delay_print("You look around and see a wagon, a gate, and a door back into the building you just fell out of \n")
@@ -134,7 +135,7 @@ def opendoorAction(answer):
             state["allowed_resps"] = ["break it", "open door"]
     elif answer == "open the door":
         dieroll = random.randint(1,20)
-        cprint(dieroll, "blue")
+        cprint(dieroll, "magenta")
         if dieroll >= 14:
             delay_print("You have sucessfully opened the door!\n")
             delay_print("You step out of the room onto a landing with a staircase going up, and one going down \n")
@@ -238,7 +239,7 @@ def thirdroomAction(answer):
         delay_print("'Wonderful, I haven't had any visitors in awhile and really need help rearranging this room\n")
         delay_print("You see her stand up and start moving almost as if floating around the room telling you where to move things\n")
         dieroll = random.randint(1,20)
-        cprint(dieroll, "blue")
+        cprint(dieroll, "magenta")
         if dieroll >= 12:
             delay_print("You move the furniture around easily and she is beaming with happiness at her rearranged room\n")
             delay_print("'Here take this as a token of gratitude'")
@@ -303,12 +304,12 @@ def firstroomAction(answer):
         dieroll1 = random.randint(1,20)
         dieroll2 = random.randint(1,20)
         cprint(dieroll1, "blue")
-        cprint(dieroll2, "blue")
+        cprint(dieroll2, "light_red")
         while dieroll1 == dieroll2:
             dieroll1 = random.randint(1,20)
             cprint(dieroll1, "blue")
             dieroll2 = random.randint(1,20)
-            cprint(dieroll2, "blue")
+            cprint(dieroll2, "light_red")
         if dieroll1 > dieroll2:
             delay_print("You manage to subdue the cultist and knock him unconcious\n")
             state["location"] = "emptyroom"
@@ -319,6 +320,7 @@ def firstroomAction(answer):
             startoverAction(answer)
     if answer == "draw sword":
         dieroll = random.randint(1,20) + 2
+        cprint(dieroll1, "blue")
         if dieroll > 14:
             delay_print("You manage to draw your sword and catch the cultist off guard, your blade slices across his neck as blood sprays out\n")
             state["location"] = "emptyroom"
@@ -375,7 +377,7 @@ def emptyroomAction(answer):
         state["allowed_resps"] = ["wagon","gate","door"]
     if answer == "check the furniture":
         dieroll = random.randint(1,20)
-        cprint(dieroll, "blue")
+        cprint(dieroll, "magenta")
         if dieroll <=8:
             delay_print("You search the different pieces of furniture and find a few coins and valuables\n")
             if "gold pieces" not in state["inventory"]:
@@ -396,7 +398,7 @@ def emptyroomAction(answer):
         state["prompt"] = "Which door do you choose to go into?\n "
         state["allowed_resps"] = ["first", "second", "third","back"]
     if answer == "hatch":
-        delay_print("You go to the hatch and hear running water behind the doors, you also get a foul smell as you get closer\n")
+        delay_print("You go to the hatch and hear running water behind the doors, you also catch a faint smell as you get close\n")
         state["location"] = "hatch"
         state["prompt"] = "Do you open the hatch?"
         state["allowed_resps"] = ["yes", "no"]
@@ -446,12 +448,12 @@ def secondroomAction(answer):
         delay_print("You also see a hatch in the back of the room, as well as three doors that lead out to the other rooms you can enter\n")
         state["location"] = "emptyroom"
         state["prompt"] = "What would you like to do?\n"
-        state["allowed_resps"] = ["Hatch", "back", "third", "first"]
+        state["allowed_resps"] = ["hatch", "back", "third", "first"]
     if answer == "loot goblin":
         delay_print("You look over the goblin and find a necklace with a ring\n")
         if "gold ring" not in state["inventory"]:
             state["inventory"].append("gold ring")
-            print(f"Inventory:{state['inventory']}","green")
+            cprint(f"Inventory:{state['inventory']}","green")
         delay_print("As you put the ring on you are flooded with images\n")
         delay_print("You start to remember that you are a Cleric with the Order of the Gauntlet\n")
         delay_print("You recover from the onslaught on images and look around\n")
@@ -468,7 +470,127 @@ def hatchAction(answer):
         delay_print("Seconds after you open the hatch you get hit with a foul smell\n")
         state["location"] = "hatch"
         state["prompt"] = "Do you go down through the hatch?\n"
-        state["allowed_resps"] = ["yes","no"]
+        state["allowed_resps"] = ["drop down","Close the door"]
+    if answer == "no":
+        delay_print("You decide the smell is to bad and don't open the hatch door\n")
+        state["location"] = "emptyroom"
+        state["prompt"] = "What are you going to do now?\n"
+        state["allowed_resps"] = ["hatch", "back", "third", "first"]
+    if answer == "Drop down":
+        delay_print("You drop down into the running water making a small splash\n")
+        delay_print("You see two paths, one up river and one down river\n")
+        state["location"] = "hatch"
+        state["prompt"] = "Which path do you choose\n"
+        state["allowed_resps"] = ["up river","down river", "back"]
+    if answer == "Close the door":
+        delay_print("You decide the smell is to bad and close the hatch door\n")
+        state["location"] = "emptyroom"
+        state["prompt"] = "What are you going to do now?\n"
+        state["allowed_resps"] = ["hatch", "back", "third", "first"]
+    if answer == "up river":
+        delay_print("You start to wade up river against the current, its very slippery but you keep going\n")
+        dieroll = random.randint(1,20)
+        cprint(dieroll, "blue")
+        if dieroll >=15:
+            delay_print("You manage to get up to a small room where the river is coming from.\n")
+            delay_print("There is a small pond in the middle of the room, but other then that there is nothing special about the room\n")
+            state["location"] = "lakeroom"
+            state["prompt"] = "What would you like to do?\n"
+            state["allowed_resps"] = ["go back", "look around", "wade into the lake"]
+        else:
+            delay_print("As you are wading up the river you lose your footing and the current carries you back down river\n")
+            delay_print("You stand up now soaked to the bone\n")
+            state["health"] = state["health"] - 5
+            cprint(f"hp:{state['health']}","red")
+            state["location"] = "hatch"
+            state["prompt"] = "Which path do you choose\n"
+            state["allowed_resps"] = ["up river","down river", "back"]
+    if answer == "down river":
+        delay_print("You follow the current but as you follow it the stench becomes worse burning your nostrils with a putrid smell\n")
+        delay_print("Just as you think it can't get any worse you come upon a small grated door that looks to open in a large room\n")
+        delay_print("In this room you see a circle drawn with what looks like blood and candles surrounding it, with some bones in the middle\n")
+        state["location"] = "sacrificeroom"
+        state["prompt"] = "What would you like to do?\n"
+        state["allowed_resps"] = ["open the door", "head back up river"]
+    if answer == "back":
+        delay_print("After seeing what is down here you decide not to push any farther and crawl back out of the hatch")
+        state["location"] = "emptyroom"
+        state["prompt"] = "What would you like to do?\n"
+        state["allowed_resps"] = ["hatch", "back", "third", "first"]
+
+#def lakeroomAction(answer):
+    
+
+def sacrificeroomAction(answer):
+    if answer == "Open the door":
+        delay_print("You push the door open making a loud screeching sound that is echoing through the room\n")
+        delay_print("You hear a scuffling sounds but can't pinpoint where they are coming from due to the echoes\n")
+        delay_print("The room goes cold as a shadow moves into view, a sound that is akin to nails on a chalkboard eminates from the shadow\n")
+        delay_print("'Gobby Issssss that you? What are you doing down here again' the shadow moves around the room 'Master will be upset with you if you are caught outside your room again'\n")
+        state["location"] = "sacrificeroom"
+        state["prompt"] = "You can try to fool the Spectre, attempt to fight it, or run, which do you do?\n"
+        state["allowed_resps"] = ["fool it", "fight it", "run"]
+    if answer == "head back up river":
+        delay_print("You get an ominous feeling from the room and decide to turn back around\n")
+        state["location"] = "hatch"
+        state["prompt"] = "Which path do you choose\n"
+        state["allowed_resps"] = ["up river","down river", "back"]
+    if answer == "Fool it":
+        dieroll = random.randint(1,20)
+        cprint(dieroll, "blue")
+        if dieroll >=8:
+            delay_print("'I am looking for my lost possesions, where did you put them hmm?' you attempt your best impersonation of a goblins voice")
+            delay_print("The spectre pauses for a second before responding 'Well I was going to return it soon, the",print(state["race"]),"had interesting things' You see the spectre motion over into the corner and you see a pile of items\n")
+            state["location"] = "sacrificeroom"
+            state["prompt"] = "What would you like to do?\n"
+            state["allowed_resps"] = ["go to pile", "try to sneak attack", "run"]
+        else:
+            delay_print("You try your best impression of a goblin but the spectre immediately knows you are not who you are saying\n")
+            delay_print("The Spectre starts to move towards you slowly rearing up ready to fight\n")
+            state["location"] = "sacrificeroom"
+            state["prompt"] = "What is your next move?\n"
+            state["allowed_resps"] = ["fight it", "run"]
+    if answer == "fight it":
+        if "holy sword" in state["inventory"] or "excalibur" in state["inventory"]:
+            dieroll = random.randint(1,20) + 4
+            cprint(dieroll, "blue")
+            if dieroll > 14:
+                delay_print("You draw your sword and swing at the spectre, cutting a section of the darkness out and causing it to shriek and run\n")
+            else:
+                delay_print("You draw your sword and swing at the spectre, you fall off balance as you swing missing the spectre\n")
+                delay_print("The spectre rears back shrieking as a black arm swipes out at you\n")
+                dieroll2 = random.randint(1,20) + 3
+                if dieroll2 <= state["armor"]:
+                    delay_print("You manage to dodge the arm and prepare for another attack but the spectre is now gone")
+                else:
+                    delay_print("Because you are off balance you can't avoid the attack and it catches you on your shoulder\n")
+                    delay_print("You stand up blood dripping down your arm to continue the fight only to find yourself alone\n")
+                    state["health"] = state["health"] - 3
+                    cprint(f"HP:{state['health']}", "red")
+            state["location"] = "sacrificeroom"
+            state["prompt"] = "What would you like to do now?\n"
+            state["allowed_resps"] = ["look around", "back"]
+        else:
+            delay_print("You draw your sword and swing but the blade goes right through the darkness not hitting anything\n")
+            delay_print("You then hear the spectre laughing as the darkness envelops you 'Another Soul to torture for eternity'\n")
+            startoverAction(answer)
+    if answer == "run":
+            delay_print("You turn and quietly sneak back through the door, going back up to the hatch\n")
+            state["location"] = "hatch"
+            state["prompt"] = "Which path do you choose\n"
+            state["allowed_resps"] = ["up river","down river", "back"]
+    if answer == "look around":
+        delay_print("With the spectre gone you see a pile of items over in the corner and something shiny is glinting in the low light\n")
+        delay_print("You also see a door that seems about the same size of the spectre you assume that is where it went\n")
+        state["location"] = "sacrificeroom"
+        state["prompt"] = "What is your next move?\n"
+        state["allowed_resps"] = ["go to pile", "go to door", "back"]
+    if answer == "go to pile":
+        delay_print("You walk over to the pile of items and sift through it, you find a health potion and a shield\n")
+        delay_print("You pick up the shield and notice a helmet beneath it that you also don\n")
+        delay_print("You notice while holding the shield you feel a surge of energy revitilizing you\n")
+        state["allowed_resps"]
+    
 
 def courtyardAction(answer):
     if answer == "wagon":
@@ -489,7 +611,7 @@ def courtyardAction(answer):
                 delay_print("You feel worn out suddenly but drag yourself over to the wagon")
                 state["location"] = "courtyard2"
                 state["prompt"] = "What would you like to do now?"
-                state["allowed_resps"] = ["Search wagon", "rest", "go to door", "go to gate"]
+                state["allowed_resps"] = ["search wagon", "rest", "go to door", "go to gate"]
     if answer == "gate":
         if "bracers" not in state["inventory"]:
             delay_print("As you start to move, you see movement on the walls surrounding the courtyard\n")
@@ -508,27 +630,27 @@ def courtyardAction(answer):
             delay_print("You feel worn out suddenly but wearily make your way to the gate")
             state["location"] = "courtyard2"
             state["prompt"] = "What would you like to do now?"
-            state["allowed_resps"] = ["Open the gate", "rest", "go to door", "go to wagon"]
+            state["allowed_resps"] = ["open the gate", "rest", "go to door", "go to wagon"]
     if answer == "door":
         delay_print("As you start to move, you see movement on the walls surrounding the courtyard\n")
         delay_print("Suddenly the movement on the walls stop and hundreds of archers appear with their bows drawn taught aimed directly at you\n")
         delay_print("One of the archers, who you assume to be the captain, speaks out 'You shouldn't be here, you will pay for breaking the law'\n")
         if "bracers" not in state["inventory"]:
             dieroll = random.randint(1,20) - 4
-            cprint(dieroll, "blue")
+            cprint(dieroll,"light_red")
             if dieroll <= 12:
                 delay_print("You start sprinting towards the door and manage to open it and get inside as you hear two thuds of an arrow embed in the door\n")
                 delay_print("You look around and realise somehow you are back in the original room and the door you just came through magically vanished again\n")
-                state["location"] = "darkroom"
+                state["location"] = "darkroom2"
                 state["prompt"] = "What would you like to do?"
-                state["allowed_resps"] = ["Window", "explore", "chest", "pile of clothes"]
+                state["allowed_resps"] = ["window", "explore", "chest", "pile of clothes"]
             if dieroll > 12:
                 delay_print("You start sprinting towards the door but suddenly an agonizing pain runs up your leg, you look down to see an arrow in your calf\n")
                 delay_print("You feel your muscles quickly lock up and the world goes dark\n")
                 startoverAction(answer)
         if "bracers" in state["inventory"]:
             dieroll = random.randint(1,20) + 4
-            cprint(dieroll, "blue")
+            cprint(dieroll, "light_red")
             if dieroll <= 14:
                 delay_print("You start sprinting towards the door and manage to open it and get inside as you hear two thuds of an arrow embed in the door\n")
                 delay_print("You look around and realise somehow you are back in the original room and the door you just came through magically vanished again\n")
@@ -547,11 +669,12 @@ def courtyardAction(answer):
 def atwindowAction(answer):
     if answer == "break it":
         dieroll = random.randint(1,20)
-        cprint(dieroll, "blue")
+        cprint(dieroll, "magenta")
         if dieroll >= 16:
             delay_print("The window breaks and you fall out into an empty courtyard\n")
             delay_print("You look around and see a wagon, a gate, and a door back into the building you just fell out of \n")
             state["health"] = state["health"] - 10
+            cprint(f"hp:{state['health']}","red")
             state["location"] = "courtyard"
             state["prompt"] = "Do you check the wagon, go to the gate, or check the door "
             state["allowed_resps"] = ["wagon","gate","door"]
@@ -559,15 +682,32 @@ def atwindowAction(answer):
             delay_print("You hear the window crack a bit. ")
     elif answer == "open door":
         dieroll = random.randint(1,20)
-        cprint(dieroll, "blue")
+        cprint(dieroll, "magenta")
         if dieroll >= 14:
             delay_print("You have sucessfully opened the door!\n")
             delay_print("You step out of the room onto a landing with a staircase going up, and one going down \n")
             state["location"] = "landing"
-            state["prompt"] = "Do you go up or down the stairs? "
+            state["prompt"] = "Do you go up or down the stairs?\n"
             state["allowed_resps"] = ["up","down"]
         else:
             delay_print("The door is wedged but you feel it give a bit\n")
+
+def racechoiceAction(answer):
+    p.race = answer
+    cprint(f"You chose the race {p.race} as your race", "red")
+    p.location = "genderchoice"
+    p.prompt = "what is your Gender?\n"
+    p.allowed_resps = ["male", "female"]
+
+def genderchoiceAction(answer):
+    p.gender = answer
+    cprint(f"You chose the race {p.gender} as your gender", "red")
+
+    delay_print("You awake in a dark room, You don't remember where you are or how you got there.\n")
+    delay_print("You look around and see a pile of clothes, a chest, and a window.\n")
+    p.location = "darkroom"
+    p.prompt = "Do you check the pile of clothes, the chest, the window?\n"
+    p.allowed_resps = ["pile of clothes", "chest", "window"]
 
 def vialAction(answer):
     if answer == "yes":
@@ -580,21 +720,34 @@ def vialAction(answer):
                 cprint(f"Inventory:{state['inventory']}", "green")
             delay_print("You now need to decide what to do. \n")
             state["location"] = "darkroom"
-            state["prompt"] = "Do you go to the window or check the pile of clothes "
+            state["prompt"] = "Do you go to the window or check the pile of clothes\n"
             state["allowed_resps"] = ["window","pile of clothes"]
 
 
 def action(answer):
     if answer == "inv":
         cprint(f"Inventory:{state['inventory']}", "green")
+    if answer == "hpotion":
+        if "hpotion" in state["inventory"]:
+            state["health"] = min(state["health"] + 10, state["maxhp"])
+            state["inventory"] = pydash.without(state["inventory"], "hpotion")
+        else:
+            delay_print("You don't have a health potion.")
+        cprint(f"HP:{state['health']}", "red")
     if answer == "health":
         cprint(f"HP:{state['health']}", "red")
-    if state["location"] == "darkroom":
+    if p.location == "racechoice":
+        racechoiceAction(answer)
+    elif p.location == "genderchoice":
+        genderchoiceAction(answer)
+    elif state["location"] == "darkroom":
         darkroomAction(answer)
     elif state["location"] == "darkroom2":
         darkroom2Action(answer)
     elif state["location"] == "walkingroom":
         opendoorAction(answer)
+    elif state["location"] == "sacrificeroom":
+        sacrificeroomAction(answer)
     elif state["location"] =="atwindow":
         atwindowAction(answer)
     elif state["location"] == "roomwithvial":
@@ -622,32 +775,71 @@ def action(answer):
         raise NotImplementedError() 
 
 
-state = {
-    "location": "darkroom",
-    "prompt": None,
-    "allowed_resps": None,
-    "inventory": [],
-    "knowledge": [],
-    "always_resps": ["inv", "health"],
-    "health": 30,
-    "armor": 8, 
-}
+class Player:
+    location = "racechoice"
+    prompt = "What is the race of your character?\n"
+    allowed_resps: "list[str]"
+    inventory: "list[str]" = []
+    always_resps = ["inv", "health", "hpotion"]
+    race: "str | None"
+    gender: 'Literal["male", "female", None]'
+    health = 30
+    _base_max_hp = 30
+    armor: int
+    
+    @property
+    def maxhp(self) -> int:
+        bonuses = 0
+        if "shield" in self.inventory:
+            bonuses += 5
+        if "something else" in self.inventory:
+            bonuses += 3
+        return self._base_max_hp + bonuses
+
+
+def unit_test():
+    testing_player = Player()
+    assert testing_player.maxhp == 30
+    testing_player.inventory.append("something else")
+    assert testing_player.maxhp == 33
+    testing_player.inventory.append("shield")
+    assert testing_player.maxhp == 38
+    testing_player.inventory = pydash.without(testing_player.inventory, "something else")
+    assert testing_player.maxhp == 35
+
+unit_test()
+
+    
+# state = {
+#     "location": "racechoice",
+#     "prompt": None,
+#     "allowed_resps": [],
+#     "inventory": [],
+#     "always_resps": ["inv", "health","hpotion"],
+#     "race": None,
+#     "gender": None,
+#     "health": 30,
+#     "maxhp": 30,
+#     "armor": 10, 
+# }
 
 delay_print("You are about to play my game, at any time you are prompted you can check your health or your inventory with the words health or inv\n")
 delay_print("Good luck and may the odds be in your favor\n")
 
+delay_print("You will set up your character first, then start your journey\n")
 
-
-delay_print("You awake in a dark room, You don't remember where you are or how you got there.\n")
-delay_print("You look around and see a pile of clothes, a chest, and a window.\n")
-
-state["prompt"] = "Do you check the pile of clothes, the chest, the window? "
-state["allowed_resps"] = ["pile of clothes", "chest", "window"]
+p = Player()
+# state["prompt"] = "What is the race of your character?\n"
+p.prompt = "What is the race of your character?\n"
+p.allowed_resps = ["human", "dragonborn", "dwarf", "tiefling", "halfing", "elf", "orc"]
 
 # Forever: ask the user for input
 while True:
     answer = inputFromList(
-        state["prompt"],
-        state["allowed_resps"] + state["always_resps"]
+        p.prompt,
+        p.allowed_resps + p.always_resps
     )
     action(answer)
+    if p.health <= 0:
+        startoverAction(answer)
+    
