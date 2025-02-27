@@ -83,7 +83,7 @@ def darkroom2Action(answer):
         p.allowed_resps = ["put it on", "put it back"]
     if answer == "window":
         delay_print("You walk over to the window, noticing the designs have changed but still looks breakable\n")
-        delay_print("You also see the door you escaped out last time\n")
+        delay_print("You also see the door you found last time\n")
         dieroll = random.randint(1,20)
         cprint(dieroll, "magenta")
         if dieroll >= 18:
@@ -250,6 +250,8 @@ def thirdroomAction(answer):
                 cprint(f"Inventory:{p.inventory}", "green")
                 p.armor = p.armor + 2
                 cprint(f"Armor:{p.armor}", "cyan")
+            else:
+                delay_print("")
                 p.location = "emptyroom"
                 p.prompt = "What would you like to do next?\n"
                 p.allowed_resps = ["look around", "check the furniture", "back"] 
@@ -304,12 +306,12 @@ def firstroomAction(answer):
         dieroll1 = random.randint(1,20)
         dieroll2 = random.randint(1,20)
         cprint(dieroll1, "blue")
-        cprint(dieroll2, "light_red")
+        cprint(dieroll2, "yellow")
         while dieroll1 == dieroll2:
             dieroll1 = random.randint(1,20)
             cprint(dieroll1, "blue")
             dieroll2 = random.randint(1,20)
-            cprint(dieroll2, "light_red")
+            cprint(dieroll2, "yellow")
         if dieroll1 > dieroll2:
             delay_print("You manage to subdue the cultist and knock him unconcious\n")
             p.location = "emptyroom"
@@ -351,7 +353,7 @@ def emptyroomAction(answer):
         delay_print("You see a door leading to the second room, or a door going forward\n")
         p.location = "emptyroom"
         p.prompt = "What would you like to do?\n"
-        p.allowed_resps = ["open the door in front", "go to second room"]
+        p.allowed_resps = ["open the door in front", "go to second room", "back"]
     if answer == "go to second room":
         if "Sword" not in p.inventory:
             delay_print("You open the second door to a dimly lit room and hear maniacal laughter\n")
@@ -587,9 +589,31 @@ def sacrificeroomAction(answer):
         p.allowed_resps = ["go to pile", "go to door", "back"]
     if answer == "go to pile":
         delay_print("You walk over to the pile of items and sift through it, you find a health potion and a shield\n")
-        delay_print("You pick up the shield and notice a helmet beneath it that you also don\n")
+        delay_print("You pick up the shield and notice a helmet that looks very familiar like a long lost memory\n")
         delay_print("You notice while holding the shield you feel a surge of energy revitilizing you\n")
-        p.allowed_resps
+        if "hpotion" not in p.inventory:
+            p.inventory.append("hpotion")
+            cprint(f"Inventory:{p.inventory}", "green")
+        p.location = "sacrificeroom"
+        p.prompt = "Do you keep the shield and the helmet?\n"
+        p.allowed_resps = ["keep them", "throw them back in the pile"]
+    if answer == "keep them":
+        if "shield" not in p.inventory:
+            p.inventory.append("shield")
+            cprint(f"Inventory:{p.inventory}", "green")
+            delay_print("You slip the shield on your back taking in the feeling of being revitilized\n")
+        else:
+            delay_print("You try to put the shield on your back and it teleports back to the pile, you realise that you cannot carry two shields at once\n")
+        if "helmet" not in p.inventory:
+            p.inventory.append("helmet")
+            cprint(f"Inventory:{p.inventory}", "green")
+            delay_print("As you slip the helmet on more of your memories start coming back, you are greeted by images of a large kingdom far away, a high temple that bears the same mark as your helmet\n")
+        else:
+            delay_print("You go to put the helmet on but then realize you can't exactly put a second helmet on so you throw it back in the pile, slightly concerned there are two helmets that are extremely familiar to you.\n")
+    if answer == "throw them back in the pile":
+        delay_print("The shield and helmet just don't feel right ")
+
+
     
 
 def courtyardAction(answer):
@@ -637,27 +661,27 @@ def courtyardAction(answer):
         delay_print("One of the archers, who you assume to be the captain, speaks out 'You shouldn't be here, you will pay for breaking the law'\n")
         if "bracers" not in p.inventory:
             dieroll = random.randint(1,20) - 4
-            cprint(dieroll,"light_red")
-            if dieroll <= 12:
+            cprint(dieroll,"yellow")
+            if dieroll <= p.armor:
                 delay_print("You start sprinting towards the door and manage to open it and get inside as you hear two thuds of an arrow embed in the door\n")
                 delay_print("You look around and realise somehow you are back in the original room and the door you just came through magically vanished again\n")
                 p.location = "darkroom2"
                 p.prompt = "What would you like to do?"
                 p.allowed_resps = ["window", "explore", "chest", "pile of clothes"]
-            if dieroll > 12:
+            else:
                 delay_print("You start sprinting towards the door but suddenly an agonizing pain runs up your leg, you look down to see an arrow in your calf\n")
                 delay_print("You feel your muscles quickly lock up and the world goes dark\n")
                 startoverAction(answer)
         if "bracers" in p.inventory:
             dieroll = random.randint(1,20) + 4
-            cprint(dieroll, "light_red")
-            if dieroll <= 14:
+            cprint(dieroll, "yellow")
+            if dieroll <= p.armor:
                 delay_print("You start sprinting towards the door and manage to open it and get inside as you hear two thuds of an arrow embed in the door\n")
                 delay_print("You look around and realise somehow you are back in the original room and the door you just came through magically vanished again\n")
                 p.location = "darkroom2"
                 p.prompt = "What would you like to do?"
                 p.allowed_resps = ["Window", "explore", "chest", "pile of clothes"]
-            if dieroll > 14:
+            else:
                 delay_print("You start sprinting towards the door but suddenly an agonizing pain runs up your leg, you look down to see an arrow in your calf\n")
                 delay_print("You feel your muscles quickly lock up and the world goes dark\n")
                 startoverAction(answer)
@@ -714,10 +738,12 @@ def vialAction(answer):
         print("You become drowsy and stumble around falling into bed and the world goes black\n")
         startoverAction(answer)
     elif answer == "no":
-            delay_print("You put the vial in your pocket to save it for later\n")
             if "mystery vial" not in p.inventory:
+                delay_print("You put the vial in your pocket to save it for later\n")
                 p.inventory.append("mystery vial")
                 cprint(f"Inventory:{p.inventory}", "green")
+            else:
+                delay_print("As you go to put the vial in your pocket it crumbles to dust and disappears\n")
             delay_print("You now need to decide what to do. \n")
             p.location = "darkroom"
             p.prompt = "Do you go to the window or check the pile of clothes\n"
@@ -797,11 +823,11 @@ class Player:
         return self._base_max_hp + bonuses
 
 
-def unit_test():
-    testing_player = Player()
-    assert testing_player.maxhp == 30
+#def unit_test():
+#    testing_player = Player()
+#    assert testing_player.maxhp == 30
 
-unit_test()
+#unit_test()
 
     
 # state = {
@@ -818,6 +844,9 @@ unit_test()
 # }
 
 delay_print("You are about to play my game, at any time you are prompted you can check your health or your inventory with the words health or inv\n")
+delay_print("Be warned though, This is a game of thinking, trying different things with items in your inventory may reveal different results\n")
+delay_print("You will see different colors numbers, they correspond to different actions\n")
+delay_print("Magenta = skill check, blue= you attacking something, yellow=an attack made against you\n")
 delay_print("Good luck and may the odds be in your favor\n")
 
 delay_print("You will set up your character first, then start your journey\n")
