@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import List, Literal, Union
 import random
 import time
 import sys
@@ -612,6 +612,48 @@ def sacrificeroomAction(answer):
             delay_print("You go to put the helmet on but then realize you can't exactly put a second helmet on so you throw it back in the pile, slightly concerned there are two helmets that are extremely familiar to you.\n")
     if answer == "throw them back in the pile":
         delay_print("The shield and helmet just don't feel right ")
+    if answer == "try to sneak attack":
+        if "holy sword" in p.inventory or "excalibur" in p.inventory:
+            dieroll = random.randint(1,20) + 4
+            cprint(dieroll, "blue")
+            if dieroll > 14:
+                delay_print("You draw your sword and swing at the spectre, cutting a section of the darkness out and causing it to shriek and run\n")
+            else:
+                delay_print("You draw your sword and swing at the spectre, you fall off balance as you swing missing the spectre\n")
+                delay_print("The spectre rears back shrieking as a black arm swipes out at you\n")
+                dieroll2 = random.randint(1,20) + 3
+                if dieroll2 <= p.armor:
+                    delay_print("You manage to dodge the arm and prepare for another attack but the spectre is now gone")
+                else:
+                    delay_print("Because you are off balance you can't avoid the attack and it catches you on your shoulder\n")
+                    delay_print("You stand up blood dripping down your arm to continue the fight only to find yourself alone\n")
+                    p.health = p.health - 3
+                    cprint(f"HP:{p.health}", "red")
+            p.location = "sacrificeroom"
+            p.prompt = "What would you like to do now?\n"
+            p.allowed_resps = ["look around", "back"]
+    if answer == "go to door":
+        delay_print("You walk up to the door and get an uneasy feeling as you get closer to the door, you feel that the shade has retreated through this door\n")
+        p.location = "sacrificedoor"
+        p.prompt = "What would you like to do?\n"
+        p.allowed_resps = ["Open the door", "kick the door down", "leave"]
+
+def sacrificedoorAction(answer):
+    if answer == "Open the door":
+        delay_print("As you grab the door handle a searing pain runs through your arm and it instantly feels like you just dipped your arm in ice water up to your shoulder\n")
+        p.health = p.health - 1
+        cprint(f"HP:{p.health}", "red")
+        p.location = "sacrificedoor"
+        p.location = "What would you like to do now?\n"
+        p.allowed_resps = ["Open the door", "kick the door down", "leave"]
+    if answer == "kick the door down":
+        dieroll = random.randint(1,20) + p.stremod
+        if dieroll >= 14:
+            delay_print("As you foot connects with the door it swings in with a loud bang revealing a small room where the shade is no where to be seen but you see a creature with a face of tentacles\n")
+            delay_print("The creature turns to you and greats you almost as if speaking in your head\n")
+            delay_print("Welcome great traveler I see you survived my illusion, what is it you desire so greatly that you have intruded on my home?\n")
+         
+
 
 
     
@@ -751,6 +793,14 @@ def vialAction(answer):
 
 
 def action(answer):
+    if answer == "stats":
+        cprint(f"Strength:{p.strength}", "cyan") 
+        cprint(f"Intelligence:{p.intelligence}", "cyan") 
+        cprint(f"Charisma:{p.charisma}", "cyan")
+        cprint(f"Constitution:{p.constitution}","cyan")
+        cprint(f"Wisdom:{p.wisdom}", "cyan")
+        cprint(f"Dexterity:{p.dexterity}", "cyan")
+        cprint(f"Armor Class:{p.armor}", "cyan")
     if answer == "inv":
         cprint(f"Inventory:{p.inventory}", "green")
     if answer == "hpotion":
@@ -796,22 +846,38 @@ def action(answer):
         thirdroomAction(answer)
     elif p.location == "emptyroom":
         emptyroomAction(answer)
-
+    elif p.location == "sacrificedoor":
+        sacrificedoorAction(answer)
+    elif p.location == "hatch":
+        hatchAction(answer)
     else:
         raise NotImplementedError() 
 
 
 class Player:
-    location = "racechoice"
-    prompt = "What is the race of your character?\n"
-    allowed_resps: "list[str]"
-    inventory: "list[str]" = []
-    always_resps = ["inv", "health", "hpotion"]
-    race: "str | None"
-    gender: 'Literal["male", "female", None]'
-    health = 30
-    _base_max_hp = 30
-    armor = 10
+    def __init__(self):
+        self.location = "racechoice"
+        self.prompt = "What is the race of your character?\n"
+        self.allowed_resps: List[str] = []
+        self.inventory: List[str] = []
+        self.always_resps = ["inv", "health", "hpotion", "stats"]
+        self.race: Union[str, None] = None
+        self.gender: Union[Literal["male"], Literal["female"], None] = None
+        self.health = 30
+        self._base_max_hp = 30
+        self.armor = 10
+        self.strength = 10
+        self.stremod = 0
+        self.intelligence = 10
+        self.intmod = 0
+        self.charisma = 10
+        self.charmod = 0
+        self.constitution = 10
+        self.conmod = 0
+        self.wisdom = 10
+        self.wismod = 0
+        self.dexterity = 10
+        self.dexmod = 0
     
     @property
     def maxhp(self) -> int:
@@ -821,6 +887,110 @@ class Player:
         if "something else" in self.inventory:
             bonuses += 3
         return self._base_max_hp + bonuses
+    def stre(self) -> int:
+        bonus = 0
+        if self.race == "human": 
+            bonus += 0
+        if self.race == "dragonborn":
+            bonus += 2
+        if self.race == "elf":
+            bonus += 1
+        elif self.race == "dwarf":
+            bonus += 3
+        elif self.race == "tiefling":
+            bonus += -1
+        elif self.race == "halfling":
+            bonus += -2
+        elif self.race == "orc":
+            bonus += 3
+        return self.strength + bonus
+    def inte(self) -> int:
+        bonus = 0
+        if p.race == "human":
+            bonus += 1
+        if p.race == "dragonborn":
+            bonus += 1
+        if p.race == "elf":
+            bonus += 3
+        if p.race == "dwarf":
+            bonus += 0
+        if p.race == "tiefling":
+            bonus += 2
+        if p.race == "halfling":
+            bonus += 1
+        if p.race == "orc":
+            bonus += -2
+        return self.intelligence + bonus
+    def cha(self) -> int:
+        bonus = 0
+        if p.race == "human":
+            bonus += 1
+        if p.race == "dragonborn":
+            bonus += -1
+        if p.race == "elf":
+            bonus += 3
+        if p.race == "dwarf":
+            bonus += -2
+        if p.race == "tiefling":
+            bonus += -1
+        if p.race == "halfling":
+            bonus += 1
+        if p.race == "orc":
+            bonus += -3
+        return self.charisma + bonus
+    def con(self) -> int:
+        bonus = 0
+        if p.race == "human":
+            bonus += 0
+        if p.race == "dragonborn":
+            bonus += 1
+        if p.race == "elf":
+            bonus += -1
+        if p.race == "dwarf":
+            bonus += 3
+        if p.race == "tiefling":
+            bonus += -1
+        if p.race == "halfling":
+            bonus += -1
+        if p.race == "orc":
+            bonus += 3
+        return self.constitution + bonus
+    def wis(self) -> int:
+        bonus = 0
+        if p.race == "human":
+            bonus += -1
+        if p.race == "dragonborn":
+            bonus += 0
+        if p.race == "elf":
+            bonus += 1
+        if p.race == "dwarf":
+            bonus += 1
+        if p.race == "tiefling":
+            bonus += -1
+        if p.race == "halfling":
+            bonus += -1
+        if p.race == "orc":
+            bonus += -1
+        return self.wisdom + bonus
+    def dex(self) -> int:
+        bonus = 0
+        if p.race == "human":
+            bonus += 3
+        if p.race == "dragonborn":
+            bonus += 0
+        if p.race == "elf":
+            bonus += 2
+        if p.race == "dwarf":
+            bonus += 1
+        if p.race == "tiefling":
+            bonus += 1
+        if p.race == "halfling":
+            bonus += 3
+        if p.race == "orc":
+            bonus += 0
+        return self.dexterity + bonus
+
+    
 
 
 #def unit_test():
@@ -828,20 +998,6 @@ class Player:
 #    assert testing_player.maxhp == 30
 
 #unit_test()
-
-    
-# state = {
-#     "location": "racechoice",
-#     "prompt": None,
-#     "allowed_resps": [],
-#     "inventory": [],
-#     "always_resps": ["inv", "health","hpotion"],
-#     "race": None,
-#     "gender": None,
-#     "health": 30,
-#     "maxhp": 30,
-#     "armor": 10, 
-# }
 
 delay_print("You are about to play my game, at any time you are prompted you can check your health or your inventory with the words health or inv\n")
 delay_print("Be warned though, This is a game of thinking, trying different things with items in your inventory may reveal different results\n")
@@ -852,7 +1008,6 @@ delay_print("Good luck and may the odds be in your favor\n")
 delay_print("You will set up your character first, then start your journey\n")
 
 p = Player()
-# p.prompt = "What is the race of your character?\n"
 p.prompt = "What is the race of your character?\n"
 p.allowed_resps = ["human", "dragonborn", "dwarf", "tiefling", "halfing", "elf", "orc"]
 
