@@ -5,6 +5,7 @@ import sys
 import pydash
 from termcolor import cprint
 from termcolor import colored
+from dataclasses import dataclass
 
 # List of Items found throughout the crawler
 # mystery vial
@@ -84,7 +85,7 @@ def darkroom2Action(answer):
     if answer == "window":
         delay_print("You walk over to the window, noticing the designs have changed but still looks breakable\n")
         delay_print("You also see the door you found last time\n")
-        dieroll = random.randint(1,20)
+        dieroll = random.randint(1,20) + p.strmod
         cprint(dieroll, "magenta")
         if dieroll >= 18:
             delay_print("The window breaks and you fall out into an empty courtyard\n")
@@ -134,7 +135,7 @@ def opendoorAction(answer):
             p.prompt = "Do you try to break it or open the door?"
             p.allowed_resps = ["break it", "open door"]
     elif answer == "open the door":
-        dieroll = random.randint(1,20)
+        dieroll = random.randint(1,20) + p.strmod
         cprint(dieroll, "magenta")
         if dieroll >= 14:
             delay_print("You have sucessfully opened the door!\n")
@@ -215,13 +216,23 @@ def threedoorAction(answer):
             p.location = "firstroom"
             p.prompt = "Do you throw the vial or attempt to grapple the cultist and overpower him\n"
             p.allowed_resps = ["throw it", "attempt to grapple"]
-    elif answer == "second":
-            delay_print("You open the second door to a dimly lit room and hear maniacal laughter\n")
-            delay_print("You walk in and immiedately slip on a wet surface falling on your back\n")
-            delay_print("As you open your eyes with stars in your vision you see a goblin above you with a rock\n")
-            delay_print("He brings the rock down and your vision goes dark as you hear 'Gobby did good, capture hostage, Gobby gets treat'\n")
-            startoverAction(answer)
-    elif answer == "third":
+    if answer == "second":
+            if "Sword" not in p.inventory:
+                delay_print("You open the second door to a dimly lit room and hear maniacal laughter\n")
+                delay_print("You walk in and trip on a hidden wire hitting your head on the cobblestone floor\n")
+                delay_print("As you open your eyes with stars in your vision you see a goblin above you with a rock\n")
+                delay_print("He brings the rock down and your vision goes dark as you hear 'Gobby did good, capture hostage, Gobby gets treat'\n")
+                startoverAction(answer)
+            if "Sword" in p.inventory:
+                delay_print("You open the second door to a dimly lit room and hear maniacal laughter\n")
+                delay_print("You walk in and trip on a hidden wire hitting your head on the cobblestone floor\n")
+                delay_print("As you open your eyes with stars in your vision you see a goblin above you with a rock\n")
+                delay_print("Thinking quickly you draw the sword you just got and manage to bury it to the hilt just under the goblins chin.\n")
+                delay_print("You stand up and pull the sword out of the goblin and clean the blood off resheathing it\n")
+                p.location = "secondroom"
+                p.prompt = "What would you like to do?\n"
+                p.allowed_resps = ["look around", "loot goblin"]
+    if answer == "third":
         if "regular clothes" not in p.inventory:
             delay_print("You open the third door to see a lady who screams and immediately throws a small object that hits you in the temple\n")
             delay_print("Your vision starts to blur and the lady charges you striking you across the head, your vision goes dark as you crumple to the floor\n")
@@ -238,7 +249,7 @@ def thirdroomAction(answer):
     if answer == "yes":
         delay_print("'Wonderful, I haven't had any visitors in awhile and really need help rearranging this room\n")
         delay_print("You see her stand up and start moving almost as if floating around the room telling you where to move things\n")
-        dieroll = random.randint(1,20)
+        dieroll = random.randint(1,20) + p.dexmod
         cprint(dieroll, "magenta")
         if dieroll >= 12:
             delay_print("You move the furniture around easily and she is beaming with happiness at her rearranged room\n")
@@ -281,7 +292,7 @@ def firstroomAction(answer):
     if answer == "throw it":
         p.inventory = pydash.without(p.inventory, "mystery vial")
         cprint(f"Inventory:{p.inventory}", "green")
-        dieroll = random.randint(1,20) + 3
+        dieroll = random.randint(1,20) + p.dexmod
         cprint(dieroll, "blue")
         if dieroll >= 15:
             delay_print("You hit the cultist in the face and the vial shatters causing him to fall unconcious\n")
@@ -291,7 +302,7 @@ def firstroomAction(answer):
         else:
             delay_print("The vial sails by the cultist because of your bad aim, and he laughs at you then charges\n")
             delay_print("You attempt to grapple him and take him out by hand\n")
-            dieroll = random.randint(1,20) + 1
+            dieroll = random.randint(1,20) + p.dexmod
             cprint(dieroll, "blue")
             if dieroll >=12:
                 delay_print("You catch him off guard as he charges you and manage to knock him out by tripping him\n")
@@ -303,14 +314,14 @@ def firstroomAction(answer):
                 delay_print("because you are off balance he is able to bring his club up and catch you in the temple\n")
                 startoverAction(answer)
     if answer == "attempt to grapple":
-        dieroll1 = random.randint(1,20)
-        dieroll2 = random.randint(1,20)
+        dieroll1 = random.randint(1,20) + p.dexmod
+        dieroll2 = random.randint(1,20) + 1
         cprint(dieroll1, "blue")
         cprint(dieroll2, "yellow")
         while dieroll1 == dieroll2:
-            dieroll1 = random.randint(1,20)
+            dieroll1 = random.randint(1,20) + p.dexmod
             cprint(dieroll1, "blue")
-            dieroll2 = random.randint(1,20)
+            dieroll2 = random.randint(1,20) + 1
             cprint(dieroll2, "yellow")
         if dieroll1 > dieroll2:
             delay_print("You manage to subdue the cultist and knock him unconcious\n")
@@ -380,7 +391,7 @@ def emptyroomAction(answer):
     if answer == "check the furniture":
         dieroll = random.randint(1,20)
         cprint(dieroll, "magenta")
-        if dieroll <=8:
+        if dieroll >=8:
             delay_print("You search the different pieces of furniture and find a few coins and valuables\n")
             if "gold pieces" not in p.inventory:
                 p.inventory.append("gold pieces")
@@ -424,13 +435,13 @@ def emptyroomAction(answer):
             p.prompt = "Do you draw your sword, or attempt to grapple him\n"
             p.allowed_resps = ["draw sword", "attempt to grapple"]
 
-    elif answer == "second":
+    if answer == "second":
             delay_print("You open the second door to a dimly lit room and hear maniacal laughter\n")
             delay_print("You walk in and immiedately slip on a wet surface falling on your back\n")
             delay_print("As you open your eyes with stars in your vision you see a goblin above you with a rock\n")
             delay_print("He brings the rock down and your vision goes dark as you hear 'Gobby did good, capture hostage, Gobby gets treat'\n")
             startoverAction(answer)
-    elif answer == "third":
+    if answer == "third":
         if "regular clothes" not in p.inventory:
             delay_print("You open the third door to see a lady who screams and immediately throws a small object that hits you in the temple\n")
             delay_print("Your vision starts to blur and the lady charges you striking you across the head, your vision goes dark as you crumple to the floor\n")
@@ -647,7 +658,8 @@ def sacrificedoorAction(answer):
         p.location = "What would you like to do now?\n"
         p.allowed_resps = ["Open the door", "kick the door down", "leave"]
     if answer == "kick the door down":
-        dieroll = random.randint(1,20) + p.stremod
+        dieroll = random.randint(1,20) + p.strmod
+        cprint(dieroll, "magenta")
         if dieroll >= 14:
             delay_print("As you foot connects with the door it swings in with a loud bang revealing a small room where the shade is no where to be seen but you see a creature with a face of tentacles\n")
             delay_print("The creature turns to you and greats you almost as if speaking in your head\n")
@@ -734,7 +746,7 @@ def courtyardAction(answer):
 
 def atwindowAction(answer):
     if answer == "break it":
-        dieroll = random.randint(1,20)
+        dieroll = random.randint(1,20) + p.strmod
         cprint(dieroll, "magenta")
         if dieroll >= 16:
             delay_print("The window breaks and you fall out into an empty courtyard\n")
@@ -747,7 +759,7 @@ def atwindowAction(answer):
         else:
             delay_print("You hear the window crack a bit. ")
     elif answer == "open door":
-        dieroll = random.randint(1,20)
+        dieroll = random.randint(1,20) + p.strmod
         cprint(dieroll, "magenta")
         if dieroll >= 14:
             delay_print("You have sucessfully opened the door!\n")
@@ -855,14 +867,29 @@ def action(answer):
     elif p.location == "hatch":
         hatchAction(answer)
     else:
-        raise NotImplementedError() 
+        raise NotImplementedError()
+    
+
+dataclass
+class Bonus:
+    statimpacted: "Literal['strength', 'dexterity', 'health', 'armor']"
+    amount: int
+ 
+ 
+@dataclass
+class InvItem:
+    name: str
+    bonuses: "list[Bonus]"
+ 
+ 
+#p.inventory.append(InvItem("shield", [Bonus("ac", 5)]))
 
 
 class Player:
     location = "racechoice"
     prompt = "What is the race of your character?\n"
     allowed_resps: "list[str]"
-    inventory: "list[str]" = []
+    inventory: "list[InvItem]" = []
     always_resps = ["inv", "health", "hpotion", "stats", "mods", "gender"]
     race: "str | None"
     gender: 'Literal["male", "female", None]'
@@ -875,7 +902,6 @@ class Player:
     _constitution = 10
     _wisdom = 10
     _dexterity = 10
-    strmod: int
     
     @property
     def maxhp(self) -> int:
@@ -888,6 +914,10 @@ class Player:
     @property
     def strength(self) -> int:
         bonus = 0
+        for item in self.inventory:
+            for itemb in item.bonuses:
+                if itemb.statimpacted == "strength":
+                    bonus += itemb.amount
         if self.race == "human": 
             bonus += 0
         elif self.race == "dragonborn":
@@ -995,22 +1025,22 @@ class Player:
         return self._dexterity + bonus
     @property
     def strmod(self) -> int:
-        return (self._strength - 10) // 2
+        return (self.strength - 10) // 2
     @property
     def intemod(self) -> int:
-        return (self._intelligence - 10) // 2
+        return (self.intelligence - 10) // 2
     @property
     def chamod(self) -> int:
-        return (self._charisma - 10) // 2
+        return (self.charisma - 10) // 2
     @property
     def dexmod(self) -> int:
-        return (self._dexterity - 10) // 2
+        return (self.dexterity - 10) // 2
     @property
     def conmod(self) -> int:
-        return (self._constitution - 10) // 2
+        return (self.constitution - 10) // 2
     @property
     def wismod(self) -> int:
-        return (self._wisdom - 10) // 2
+        return (self.wisdom - 10) // 2
 
     
 
