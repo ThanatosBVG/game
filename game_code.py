@@ -855,29 +855,28 @@ def action(answer):
 
 
 class Player:
-    def __init__(self):
-        self.location = "racechoice"
-        self.prompt = "What is the race of your character?\n"
-        self.allowed_resps: List[str] = []
-        self.inventory: List[str] = []
-        self.always_resps = ["inv", "health", "hpotion", "stats"]
-        self.race: Union[str, None] = None
-        self.gender: Union[Literal["male"], Literal["female"], None] = None
-        self.health = 30
-        self._base_max_hp = 30
-        self.armor = 10
-        self.strength = 10
-        self.stremod = 0
-        self.intelligence = 10
-        self.intmod = 0
-        self.charisma = 10
-        self.charmod = 0
-        self.constitution = 10
-        self.conmod = 0
-        self.wisdom = 10
-        self.wismod = 0
-        self.dexterity = 10
-        self.dexmod = 0
+    location = "racechoice"
+    prompt = "What is the race of your character?\n"
+    allowed_resps: "list[str]"
+    inventory: "list[str]" = []
+    always_resps = ["inv", "health", "hpotion", "stats"]
+    race: "str | None"
+    gender: 'Literal["male", "female", None]'
+    health = 30
+    _base_max_hp = 30
+    armor = 10
+    strength = 10
+    stremod = 0
+    intelligence = 10
+    intmod = 0
+    charisma = 10
+    charmod = 0
+    constitution = 10
+    conmod = 0
+    wisdom = 10
+    wismod = 0
+    dexterity = 10
+    dexmod = 0
     
     @property
     def maxhp(self) -> int:
@@ -887,13 +886,14 @@ class Player:
         if "something else" in self.inventory:
             bonuses += 3
         return self._base_max_hp + bonuses
+    @property
     def stre(self) -> int:
         bonus = 0
         if self.race == "human": 
             bonus += 0
-        if self.race == "dragonborn":
+        elif self.race == "dragonborn":
             bonus += 2
-        if self.race == "elf":
+        elif self.race == "elf":
             bonus += 1
         elif self.race == "dwarf":
             bonus += 3
@@ -906,89 +906,89 @@ class Player:
         return self.strength + bonus
     def inte(self) -> int:
         bonus = 0
-        if p.race == "human":
+        if self.race == "human":
             bonus += 1
-        if p.race == "dragonborn":
+        if self.race == "dragonborn":
             bonus += 1
-        if p.race == "elf":
+        if self.race == "elf":
             bonus += 3
-        if p.race == "dwarf":
+        if self.race == "dwarf":
             bonus += 0
-        if p.race == "tiefling":
+        if self.race == "tiefling":
             bonus += 2
-        if p.race == "halfling":
+        if self.race == "halfling":
             bonus += 1
-        if p.race == "orc":
+        if self.race == "orc":
             bonus += -2
-        return self.intelligence + bonus
+        return p.intelligence + bonus
     def cha(self) -> int:
         bonus = 0
-        if p.race == "human":
+        if self.race == "human":
             bonus += 1
-        if p.race == "dragonborn":
+        if self.race == "dragonborn":
             bonus += -1
-        if p.race == "elf":
+        if self.race == "elf":
             bonus += 3
-        if p.race == "dwarf":
+        if self.race == "dwarf":
             bonus += -2
-        if p.race == "tiefling":
+        if self.race == "tiefling":
             bonus += -1
-        if p.race == "halfling":
+        if self.race == "halfling":
             bonus += 1
-        if p.race == "orc":
+        if self.race == "orc":
             bonus += -3
-        return self.charisma + bonus
+        return p.charisma + bonus
     def con(self) -> int:
         bonus = 0
-        if p.race == "human":
+        if self.race == "human":
             bonus += 0
-        if p.race == "dragonborn":
+        if self.race == "dragonborn":
             bonus += 1
-        if p.race == "elf":
+        if self.race == "elf":
             bonus += -1
-        if p.race == "dwarf":
+        if self.race == "dwarf":
             bonus += 3
-        if p.race == "tiefling":
+        if self.race == "tiefling":
             bonus += -1
-        if p.race == "halfling":
+        if self.race == "halfling":
             bonus += -1
-        if p.race == "orc":
+        if self.race == "orc":
             bonus += 3
         return self.constitution + bonus
     def wis(self) -> int:
         bonus = 0
-        if p.race == "human":
+        if self.race == "human":
             bonus += -1
-        if p.race == "dragonborn":
+        if self.race == "dragonborn":
             bonus += 0
-        if p.race == "elf":
+        if self.race == "elf":
             bonus += 1
-        if p.race == "dwarf":
+        if self.race == "dwarf":
             bonus += 1
-        if p.race == "tiefling":
+        if self.race == "tiefling":
             bonus += -1
-        if p.race == "halfling":
+        if self.race == "halfling":
             bonus += -1
-        if p.race == "orc":
+        if self.race == "orc":
             bonus += -1
-        return self.wisdom + bonus
+        return p.wisdom + bonus
     def dex(self) -> int:
         bonus = 0
-        if p.race == "human":
+        if self.race == "human":
             bonus += 3
-        if p.race == "dragonborn":
+        if self.race == "dragonborn":
             bonus += 0
-        if p.race == "elf":
+        if self.race == "elf":
             bonus += 2
-        if p.race == "dwarf":
+        if self.race == "dwarf":
             bonus += 1
-        if p.race == "tiefling":
+        if self.race == "tiefling":
             bonus += 1
-        if p.race == "halfling":
+        if self.race == "halfling":
             bonus += 3
-        if p.race == "orc":
+        if self.race == "orc":
             bonus += 0
-        return self.dexterity + bonus
+        return p.dexterity + bonus
 
     
 
@@ -996,6 +996,12 @@ class Player:
 #def unit_test():
 #    testing_player = Player()
 #    assert testing_player.maxhp == 30
+#    testing_player.inventory.append("something else")
+#    assert testing_player.maxhp == 33
+#    testing_player.inventory.append("shield")
+#    assert testing_player.maxhp == 38
+#    testing_player.inventory = pydash.without(testing_player.inventory, "something else")
+#    assert testing_player.maxhp == 35
 
 #unit_test()
 
