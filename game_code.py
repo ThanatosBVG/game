@@ -801,6 +801,10 @@ def action(answer):
         cprint(f"Wisdom:{p.wisdom}", "cyan")
         cprint(f"Dexterity:{p.dexterity}", "cyan")
         cprint(f"Armor Class:{p.armor}", "cyan")
+    if answer == "mods":
+        cprint(f"Strength:{p.strmod}", "cyan")
+    if answer == "gender":
+        cprint(f"You are a {p.gender}")
     if answer == "inv":
         cprint(f"Inventory:{p.inventory}", "green")
     if answer == "hpotion":
@@ -859,24 +863,19 @@ class Player:
     prompt = "What is the race of your character?\n"
     allowed_resps: "list[str]"
     inventory: "list[str]" = []
-    always_resps = ["inv", "health", "hpotion", "stats"]
+    always_resps = ["inv", "health", "hpotion", "stats", "mods", "gender"]
     race: "str | None"
     gender: 'Literal["male", "female", None]'
     health = 30
     _base_max_hp = 30
     armor = 10
-    strength = 10
-    stremod = 0
-    intelligence = 10
-    intmod = 0
-    charisma = 10
-    charmod = 0
-    constitution = 10
-    conmod = 0
-    wisdom = 10
-    wismod = 0
-    dexterity = 10
-    dexmod = 0
+    _strength = 10
+    _intelligence = 10
+    _charisma = 10
+    _constitution = 10
+    _wisdom = 10
+    _dexterity = 10
+    strmod: int
     
     @property
     def maxhp(self) -> int:
@@ -887,7 +886,7 @@ class Player:
             bonuses += 3
         return self._base_max_hp + bonuses
     @property
-    def stre(self) -> int:
+    def strength(self) -> int:
         bonus = 0
         if self.race == "human": 
             bonus += 0
@@ -903,92 +902,115 @@ class Player:
             bonus += -2
         elif self.race == "orc":
             bonus += 3
-        return self.strength + bonus
-    def inte(self) -> int:
+        return self._strength + bonus
+    @property
+    def intelligence(self) -> int:
         bonus = 0
         if self.race == "human":
             bonus += 1
-        if self.race == "dragonborn":
+        elif self.race == "dragonborn":
             bonus += 1
-        if self.race == "elf":
+        elif self.race == "elf":
             bonus += 3
-        if self.race == "dwarf":
+        elif self.race == "dwarf":
             bonus += 0
-        if self.race == "tiefling":
+        elif self.race == "tiefling":
             bonus += 2
-        if self.race == "halfling":
+        elif self.race == "halfling":
             bonus += 1
-        if self.race == "orc":
+        elif self.race == "orc":
             bonus += -2
-        return p.intelligence + bonus
-    def cha(self) -> int:
+        return self._intelligence + bonus
+    @property
+    def charisma(self) -> int:
         bonus = 0
         if self.race == "human":
             bonus += 1
-        if self.race == "dragonborn":
+        elif self.race == "dragonborn":
             bonus += -1
-        if self.race == "elf":
+        elif self.race == "elf":
             bonus += 3
-        if self.race == "dwarf":
+        elif self.race == "dwarf":
             bonus += -2
-        if self.race == "tiefling":
+        elif self.race == "tiefling":
             bonus += -1
-        if self.race == "halfling":
+        elif self.race == "halfling":
             bonus += 1
-        if self.race == "orc":
+        elif self.race == "orc":
             bonus += -3
-        return p.charisma + bonus
-    def con(self) -> int:
+        return self._charisma + bonus
+    @property
+    def constitution(self) -> int:
         bonus = 0
         if self.race == "human":
             bonus += 0
-        if self.race == "dragonborn":
+        elif self.race == "dragonborn":
             bonus += 1
-        if self.race == "elf":
+        elif self.race == "elf":
             bonus += -1
-        if self.race == "dwarf":
+        elif self.race == "dwarf":
             bonus += 3
-        if self.race == "tiefling":
+        elif self.race == "tiefling":
             bonus += -1
-        if self.race == "halfling":
+        elif self.race == "halfling":
             bonus += -1
-        if self.race == "orc":
+        elif self.race == "orc":
             bonus += 3
-        return self.constitution + bonus
-    def wis(self) -> int:
+        return self._constitution + bonus
+    @property
+    def wisdom(self) -> int:
         bonus = 0
         if self.race == "human":
             bonus += -1
-        if self.race == "dragonborn":
+        elif self.race == "dragonborn":
             bonus += 0
-        if self.race == "elf":
+        elif self.race == "elf":
             bonus += 1
-        if self.race == "dwarf":
+        elif self.race == "dwarf":
             bonus += 1
-        if self.race == "tiefling":
+        elif self.race == "tiefling":
             bonus += -1
-        if self.race == "halfling":
+        elif self.race == "halfling":
             bonus += -1
-        if self.race == "orc":
+        elif self.race == "orc":
             bonus += -1
-        return p.wisdom + bonus
-    def dex(self) -> int:
+        return self._wisdom + bonus
+    @property
+    def dexterity(self) -> int:
         bonus = 0
         if self.race == "human":
             bonus += 3
-        if self.race == "dragonborn":
+        elif self.race == "dragonborn":
             bonus += 0
-        if self.race == "elf":
+        elif self.race == "elf":
             bonus += 2
-        if self.race == "dwarf":
+        elif self.race == "dwarf":
             bonus += 1
-        if self.race == "tiefling":
+        elif self.race == "tiefling":
             bonus += 1
-        if self.race == "halfling":
+        elif self.race == "halfling":
             bonus += 3
-        if self.race == "orc":
+        elif self.race == "orc":
             bonus += 0
-        return p.dexterity + bonus
+        return self._dexterity + bonus
+    @property
+    def strmod(self) -> int:
+        return (self._strength - 10) // 2
+    @property
+    def intemod(self) -> int:
+        return (self._intelligence - 10) // 2
+    @property
+    def chamod(self) -> int:
+        return (self._charisma - 10) // 2
+    @property
+    def dexmod(self) -> int:
+        return (self._dexterity - 10) // 2
+    @property
+    def conmod(self) -> int:
+        return (self._constitution - 10) // 2
+    @property
+    def wismod(self) -> int:
+        return (self._wisdom - 10) // 2
 
     
 
